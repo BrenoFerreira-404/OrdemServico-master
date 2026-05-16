@@ -1,0 +1,157 @@
+<mxfile host="drawio" modified="2026-05-16T18:30:00.000Z" agent="Chrome" version="14.0.0" etag="fluxo-login-dashboard">
+  <diagram id="login-flow" name="Fluxo Login até Dashboard">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- CAMADAS -->
+        <!-- Web Layer Background -->
+        <mxCell id="web-layer-bg" value="WEB (Blazor)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F4F8;strokeColor=#0088CC;strokeWidth=2;dashed=1;fontSize=12;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="300" height="520" as="geometry"/>
+        </mxCell>
+
+        <!-- API Layer Background -->
+        <mxCell id="api-layer-bg" value="API (.NET 9)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8F4;strokeColor=#8800CC;strokeWidth=2;dashed=1;fontSize=12;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="360" y="20" width="280" height="520" as="geometry"/>
+        </mxCell>
+
+        <!-- Infrastructure Layer Background -->
+        <mxCell id="infra-layer-bg" value="Infrastructure" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F0E8;strokeColor=#CC8800;strokeWidth=2;dashed=1;fontSize=12;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="680" y="20" width="280" height="520" as="geometry"/>
+        </mxCell>
+
+        <!-- Database Layer Background -->
+        <mxCell id="db-layer-bg" value="Banco de Dados" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F4E8;strokeColor=#00AA00;strokeWidth=2;dashed=1;fontSize=12;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="20" width="180" height="520" as="geometry"/>
+        </mxCell>
+
+        <!-- 1. Login Page -->
+        <mxCell id="1-login-page" value="1. LoginPage.razor&#10;Formulário de Login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#0066CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="260" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 2. User Input -->
+        <mxCell id="2-user-input" value="2. Usuário Preenche&#10;Email + Senha" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#0066CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="260" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 3. Form Submit -->
+        <mxCell id="3-form-submit" value="3. LoginViewModel&#10;HandleLogin()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#0066CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="260" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 4. HTTP Request -->
+        <mxCell id="4-http-request" value="4. POST /api/auth/login&#10;{email, senha}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="380" y="60" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 5. Validation Filter -->
+        <mxCell id="5-validation" value="5. ValidationFilter&#10;Validar DTO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="380" y="160" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 6. Auth Service -->
+        <mxCell id="6-auth-service" value="6. AuthService.LoginAsync()&#10;Processar Login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="380" y="260" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 7. Identity Service -->
+        <mxCell id="7-identity-service" value="7. IdentityService&#10;ValidarCredenciaisAsync()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4D4A8;strokeColor=#CC8800;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="700" y="160" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 8. Database Query -->
+        <mxCell id="8-db-query" value="8. Buscar Usuário&#10;AspNetUsers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90EE90;strokeColor=#00AA00;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="160" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 9. Verify Password -->
+        <mxCell id="9-verify-password" value="9. UserManager&#10;CheckPasswordAsync()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4D4A8;strokeColor=#CC8800;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="700" y="260" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 10. Token Generation -->
+        <mxCell id="10-token-gen" value="10. JwtTokenService&#10;GerarTokensAsync()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="380" y="360" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 11. Database Save -->
+        <mxCell id="11-db-save" value="11. Salvar Tokens&#10;refresh_tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90EE90;strokeColor=#00AA00;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="360" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 12. Return JWT -->
+        <mxCell id="12-return-jwt" value="12. Return LoginResponse&#10;{accessToken, refreshToken}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="380" y="460" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 13. Store Token -->
+        <mxCell id="13-store-token" value="13. TokenStorage&#10;Armazenar JWT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#0066CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="260" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 14. Update Auth State -->
+        <mxCell id="14-auth-state" value="14. AuthStateProvider&#10;Atualizar Estado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#0066CC;strokeWidth=2;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="260" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 15. Dashboard -->
+        <mxCell id="15-dashboard" value="15. Dashboard / Home.razor&#10;✓ Usuário Autenticado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFD700;strokeColor=#FF8800;strokeWidth=3;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="150" y="580" width="240" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrows -->
+        <!-- Web Flow -->
+        <mxCell id="arrow-1-2" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#0066CC;strokeWidth=2;" edge="1" parent="1" source="1-login-page" target="2-user-input"/>
+        <mxCell id="arrow-2-3" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#0066CC;strokeWidth=2;" edge="1" parent="1" source="2-user-input" target="3-form-submit"/>
+        <mxCell id="arrow-3-4" value="POST&#10;Request" style="endArrow=classic;html=1;rounded=0;strokeColor=#0066CC;strokeWidth=2;" edge="1" parent="1" source="3-form-submit" target="4-http-request"/>
+
+        <!-- API Flow -->
+        <mxCell id="arrow-4-5" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#9932CC;strokeWidth=2;" edge="1" parent="1" source="4-http-request" target="5-validation"/>
+        <mxCell id="arrow-5-6" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#9932CC;strokeWidth=2;" edge="1" parent="1" source="5-validation" target="6-auth-service"/>
+        <mxCell id="arrow-6-7" value="Validar&#10;Credenciais" style="endArrow=classic;html=1;rounded=0;strokeColor=#9932CC;strokeWidth=2;" edge="1" parent="1" source="6-auth-service" target="7-identity-service"/>
+
+        <!-- Infrastructure Flow -->
+        <mxCell id="arrow-7-8" value="FindByEmail" style="endArrow=classic;html=1;rounded=0;strokeColor=#CC8800;strokeWidth=2;" edge="1" parent="1" source="7-identity-service" target="8-db-query"/>
+        <mxCell id="arrow-8-7" value="User Data" style="endArrow=classic;html=1;rounded=0;strokeColor=#CC8800;strokeWidth=2;" edge="1" parent="1" source="8-db-query" target="7-identity-service"/>
+        <mxCell id="arrow-7-9" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#CC8800;strokeWidth=2;" edge="1" parent="1" source="7-identity-service" target="9-verify-password"/>
+        <mxCell id="arrow-9-10" value="Credenciais OK" style="endArrow=classic;html=1;rounded=0;strokeColor=#9932CC;strokeWidth=2;" edge="1" parent="1" source="9-verify-password" target="10-token-gen"/>
+
+        <!-- Token Generation -->
+        <mxCell id="arrow-10-11" value="SaveTokens" style="endArrow=classic;html=1;rounded=0;strokeColor=#CC8800;strokeWidth=2;" edge="1" parent="1" source="10-token-gen" target="11-db-save"/>
+        <mxCell id="arrow-11-12" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#9932CC;strokeWidth=2;" edge="1" parent="1" source="11-db-save" target="12-return-jwt"/>
+
+        <!-- Web Response -->
+        <mxCell id="arrow-12-13" value="Response&#10;+ JWT" style="endArrow=classic;html=1;rounded=0;strokeColor=#0066CC;strokeWidth=2;" edge="1" parent="1" source="12-return-jwt" target="13-store-token"/>
+        <mxCell id="arrow-13-14" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#0066CC;strokeWidth=2;" edge="1" parent="1" source="13-store-token" target="14-auth-state"/>
+        <mxCell id="arrow-14-15" value="Navigate&#10;Redirect" style="endArrow=classic;html=1;rounded=0;strokeColor=#FF8800;strokeWidth=2;" edge="1" parent="1" source="14-auth-state" target="15-dashboard"/>
+
+        <!-- Legend -->
+        <mxCell id="legend-bg" value="LEGENDA" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0F0F0;strokeColor=#999999;strokeWidth=1;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="20" y="680" width="1160" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-web" value="◆ Web Layer (Blazor Client-side)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#0066CC;strokeWidth=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="30" y="695" width="270" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-api" value="◆ API Layer (Minimal APIs / Endpoints)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="310" y="695" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-infra" value="◆ Infrastructure (Identity / Services)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4D4A8;strokeColor=#CC8800;strokeWidth=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="600" y="695" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-db" value="◆ Database (MySQL / EF Core)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#90EE90;strokeColor=#00AA00;strokeWidth=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="890" y="695" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-desc" value="Fluxo completo: Usuário preenche credenciais na página de login → API valida as credenciais no banco → Gera JWT tokens → Retorna ao cliente → Token armazenado → Usuário redirecionado ao Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="30" y="727" width="1150" height="45" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

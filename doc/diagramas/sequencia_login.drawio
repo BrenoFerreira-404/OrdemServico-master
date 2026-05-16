@@ -1,0 +1,229 @@
+<mxfile host="drawio" modified="2026-05-16T18:35:00.000Z" agent="Chrome" version="14.0.0" etag="login-sequence">
+  <diagram id="sequence-diagram" name="Diagrama de Sequência - Login">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Actors -->
+        <mxCell id="actor-user" value="Usuário" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="60" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor-browser" value="Browser&#10;(Blazor)" style="shape=box;whiteSpace=wrap;html=1;rounded=0;fillColor=#87CEEB;strokeColor=#0066CC;strokeWidth=2;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="140" y="30" width="90" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor-api" value="API&#10;Endpoints" style="shape=box;whiteSpace=wrap;html=1;rounded=0;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="300" y="30" width="90" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor-auth" value="Auth&#10;Service" style="shape=box;whiteSpace=wrap;html=1;rounded=0;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="460" y="30" width="90" height="60" as="geometry"/>
+        </Cell>
+
+        <mxCell id="actor-identity" value="Identity&#10;Service" style="shape=box;whiteSpace=wrap;html=1;rounded=0;fillColor=#F4D4A8;strokeColor=#CC8800;strokeWidth=2;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="620" y="30" width="90" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor-usermanager" value="User&#10;Manager" style="shape=box;whiteSpace=wrap;html=1;rounded=0;fillColor=#F4D4A8;strokeColor=#CC8800;strokeWidth=2;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="780" y="30" width="90" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor-db" value="MySQL&#10;Database" style="shape=box;whiteSpace=wrap;html=1;rounded=0;fillColor=#90EE90;strokeColor=#00AA00;strokeWidth=2;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="940" y="30" width="90" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor-tokenservice" value="Token&#10;Service" style="shape=box;whiteSpace=wrap;html=1;rounded=0;fillColor=#DDA0DD;strokeColor=#9932CC;strokeWidth=2;fontSize=10;fontStyle=bold;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="30" width="90" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="line-user" value="" style="line;strokeColor=#999999;strokeWidth=1;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="line-browser" value="" style="line;strokeColor=#0066CC;strokeWidth=2;html=1;" vertex="1" parent="1">
+          <mxGeometry x="185" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="line-api" value="" style="line;strokeColor=#9932CC;strokeWidth=2;html=1;" vertex="1" parent="1">
+          <mxGeometry x="345" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="line-auth" value="" style="line;strokeColor=#9932CC;strokeWidth=2;html=1;" vertex="1" parent="1">
+          <mxGeometry x="505" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="line-identity" value="" style="line;strokeColor=#CC8800;strokeWidth=2;html=1;" vertex="1" parent="1">
+          <mxGeometry x="665" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="line-usermanager" value="" style="line;strokeColor=#CC8800;strokeWidth=2;html=1;" vertex="1" parent="1">
+          <mxGeometry x="825" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="line-db" value="" style="line;strokeColor=#00AA00;strokeWidth=2;html=1;" vertex="1" parent="1">
+          <mxGeometry x="985" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="line-token" value="" style="line;strokeColor=#9932CC;strokeWidth=2;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="100" width="1" height="800" as="geometry"/>
+        </mxCell>
+
+        <!-- Messages -->
+
+        <!-- 1. Usuário clica em Entrar -->
+        <mxCell id="msg-1" value="1. Click &quot;Entrar&quot;" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-user" target="actor-browser">
+          <mxGeometry width="100" relative="1" height="30" as="geometry">
+            <mxPoint x="70" y="130" as="sourcePoint"/>
+            <mxPoint x="185" y="130" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 2. POST /api/auth/login -->
+        <mxCell id="msg-2" value="2. POST /api/auth/login&#10;{email, senha}" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-browser" target="actor-api">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="185" y="160" as="sourcePoint"/>
+            <mxPoint x="345" y="160" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 3. Validate DTO -->
+        <mxCell id="msg-3" value="3. Validate DTO&#10;(ValidationFilter)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-api" target="actor-api">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="345" y="200" as="sourcePoint"/>
+            <mxPoint x="390" y="240" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 4. AuthService.LoginAsync() -->
+        <mxCell id="msg-4" value="4. LoginAsync(request)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-api" target="actor-auth">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="345" y="280" as="sourcePoint"/>
+            <mxPoint x="505" y="280" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 5. ValidarCredenciaisAsync() -->
+        <mxCell id="msg-5" value="5. ValidarCredenciaisAsync(&#10;email, senha)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-auth" target="actor-identity">
+          <mxGeometry width="100" relative="1" height="50" as="geometry">
+            <mxPoint x="505" y="320" as="sourcePoint"/>
+            <mxPoint x="665" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 6. FindByEmailAsync() -->
+        <mxCell id="msg-6" value="6. FindByEmailAsync(email)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-identity" target="actor-usermanager">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="665" y="360" as="sourcePoint"/>
+            <mxPoint x="825" y="360" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 7. SQL Query -->
+        <mxCell id="msg-7" value="7. SELECT * FROM AspNetUsers&#10;WHERE Email = @email LIMIT 1" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-usermanager" target="actor-db">
+          <mxGeometry width="100" relative="1" height="50" as="geometry">
+            <mxPoint x="825" y="400" as="sourcePoint"/>
+            <mxPoint x="985" y="400" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 8. User Data -->
+        <mxCell id="msg-8" value="8. User Data ✓" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;" edge="1" parent="1" source="actor-db" target="actor-usermanager">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="985" y="440" as="sourcePoint"/>
+            <mxPoint x="825" y="440" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 9. CheckPasswordAsync() -->
+        <mxCell id="msg-9" value="9. CheckPasswordAsync(user, senha)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-usermanager" target="actor-identity">
+          <mxGeometry width="100" relative="1" height="50" as="geometry">
+            <mxPoint x="825" y="480" as="sourcePoint"/>
+            <mxPoint x="665" y="480" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 10. Credenciais válidas -->
+        <mxCell id="msg-10" value="10. credenciais OK ✓" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;" edge="1" parent="1" source="actor-identity" target="actor-auth">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="665" y="520" as="sourcePoint"/>
+            <mxPoint x="505" y="520" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 11. GerarTokensAsync() -->
+        <mxCell id="msg-11" value="11. GerarTokensAsync(&#10;userId, email, role)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-auth" target="actor-tokenservice">
+          <mxGeometry width="100" relative="1" height="50" as="geometry">
+            <mxPoint x="505" y="560" as="sourcePoint"/>
+            <mxPoint x="1145" y="560" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 12. Criar JWT + Refresh Token -->
+        <mxCell id="msg-12" value="12. Criar JWT + Refresh Token" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-tokenservice" target="actor-tokenservice">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="1145" y="600" as="sourcePoint"/>
+            <mxPoint x="1190" y="640" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 13. Salvar Refresh Token -->
+        <mxCell id="msg-13" value="13. INSERT INTO refresh_tokens" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-tokenservice" target="actor-db">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="1145" y="680" as="sourcePoint"/>
+            <mxPoint x="985" y="680" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 14. OK -->
+        <mxCell id="msg-14" value="14. OK" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;" edge="1" parent="1" source="actor-db" target="actor-tokenservice">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="985" y="720" as="sourcePoint"/>
+            <mxPoint x="1145" y="720" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 15. Return Tokens -->
+        <mxCell id="msg-15" value="15. {accessToken, refreshToken}" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;" edge="1" parent="1" source="actor-tokenservice" target="actor-auth">
+          <mxGeometry width="100" relative="1" height="40" as="geometry">
+            <mxPoint x="1145" y="760" as="sourcePoint"/>
+            <mxPoint x="505" y="760" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Nota de coluna -->
+        <mxCell id="note-1" value="✓ Senha verificada&#10;com BCrypt" style="shape=note;whiteSpace=wrap;html=1;rounded=1;fontSize=8;fillColor=#FFF9E6;strokeColor=#FFD700;" vertex="1" parent="1">
+          <mxGeometry x="620" y="420" width="120" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Nota de coluna 2 -->
+        <mxCell id="note-2" value="JWT Payload:&#10;sub, email, role,&#10;exp, iat, iss, aud" style="shape=note;whiteSpace=wrap;html=1;rounded=1;fontSize=8;fillColor=#FFF9E6;strokeColor=#FFD700;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="580" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Final Response -->
+        <mxCell id="msg-final-1" value="16. HTTP 200 OK&#10;LoginResponse" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-api" target="actor-browser">
+          <mxGeometry width="100" relative="1" height="50" as="geometry">
+            <mxPoint x="345" y="780" as="sourcePoint"/>
+            <mxPoint x="185" y="780" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Token Storage -->
+        <mxCell id="msg-final-2" value="17. TokenStorage.SetToken()&#10;localStorage.setItem('token', ...)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;fontSize=9;fontStyle=bold;" edge="1" parent="1" source="actor-browser" target="actor-browser">
+          <mxGeometry width="100" relative="1" height="50" as="geometry">
+            <mxPoint x="185" y="810" as="sourcePoint"/>
+            <mxPoint x="230" y="850" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Nota final -->
+        <mxCell id="note-final" value="Após armazenar token:&#10;1. AuthStateProvider atualizado&#10;2. NavigationManager redireciona para /&#10;3. Home.razor carregado ✓" style="shape=note;whiteSpace=wrap;html=1;rounded=1;fontSize=9;fillColor=#E8F4F8;strokeColor=#0088CC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="820" width="280" height="70" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
