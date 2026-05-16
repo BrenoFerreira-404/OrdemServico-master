@@ -70,5 +70,5 @@ public class OrdemServicoTests
     }
 
     private static OrdemServico CriarOsValida()
-        => OrdemServico.Criar(Guid.NewGuid(), null, "Nao liga", "2h", null, null, null, null);
+        => OrdemServico.Criar(Guid.NewGuid(), Guid.NewGuid(), null, "Nao liga", "2h", null, null, null, null);
 }

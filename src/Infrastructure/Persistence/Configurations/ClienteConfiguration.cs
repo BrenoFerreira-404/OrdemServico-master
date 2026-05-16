@@ -11,6 +11,15 @@ public sealed class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
         builder.ToTable("clientes");
         
         builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.TenantId).IsRequired();
+
+        builder.HasIndex(x => new { x.TenantId, x.Documento });
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder.Property(x => x.Nome)
             .IsRequired()

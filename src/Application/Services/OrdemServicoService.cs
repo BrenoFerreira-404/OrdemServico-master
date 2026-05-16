@@ -15,13 +15,20 @@ public sealed partial class OrdemServicoService : IOrdemServicoService
 {
     private readonly IOrdemServicoRepository _osRepository;
     private readonly IClienteRepository _clienteRepository;
+    private readonly IEquipamentoRepository _equipamentoRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<OrdemServicoService> _logger;
 
-    public OrdemServicoService(IOrdemServicoRepository osRepository, IClienteRepository clienteRepository, IUnitOfWork unitOfWork, ILogger<OrdemServicoService> logger)
+    public OrdemServicoService(
+        IOrdemServicoRepository osRepository,
+        IClienteRepository clienteRepository,
+        IEquipamentoRepository equipamentoRepository,
+        IUnitOfWork unitOfWork,
+        ILogger<OrdemServicoService> logger)
     {
         _osRepository = osRepository;
         _clienteRepository = clienteRepository;
+        _equipamentoRepository = equipamentoRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -31,7 +38,15 @@ public sealed partial class OrdemServicoService : IOrdemServicoService
         var cliente = await _clienteRepository.ObterPorIdAsync(request.ClienteId, cancellationToken);
         if (cliente is null) throw new DomainException("Cliente não encontrado.");
 
+        if (request.EquipamentoId.HasValue)
+        {
+            var equipamento = await _equipamentoRepository.ObterPorIdAsync(request.EquipamentoId.Value, cancellationToken);
+            if (equipamento is null || equipamento.ClienteId != request.ClienteId)
+                throw new DomainException("Equipamento invalido para este cliente.");
+        }
+
         var os = OrdemServico.Criar(
+            cliente.TenantId,
             request.ClienteId,
             request.EquipamentoId,
             request.Defeito,

@@ -2,9 +2,11 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Api.IntegrationTests.Fixtures;
+using Api.IntegrationTests.Helpers;
 using Web.Models;
 using Web.Models.Responses;
 using Web.Services.Api;
+using Web.Services.Auth;
 
 namespace Api.IntegrationTests.Endpoints;
 
@@ -25,7 +27,8 @@ public sealed class ApiFrontIntegrationTests
     {
         await _fixture.ResetDatabaseAsync();
 
-        using var httpClient = _fixture.CreateApiClient();
+        var (httpClient, tokenStorage) = await ApiTestAuthHelper.CriarClienteAutenticadoComTokenStorageAsync(_fixture.CreateApiClient());
+        using var _ = httpClient;
         var httpClientFactory = new StaticHttpClientFactory(httpClient);
         var apiSettings = Microsoft.Extensions.Options.Options.Create(new ApiSettings
         {
@@ -33,7 +36,7 @@ public sealed class ApiFrontIntegrationTests
             ApiKey = string.Empty
         });
 
-        var apiClient = new ApiClient(httpClientFactory, new ApiErrorParser(), apiSettings);
+        var apiClient = new ApiClient(httpClientFactory, new ApiErrorParser(), apiSettings, tokenStorage);
         var clientesApi = new ClientesApi(apiClient);
         var equipamentosApi = new EquipamentosApi(apiClient);
         var ordensApi = new OrdensServicoApi(apiClient);

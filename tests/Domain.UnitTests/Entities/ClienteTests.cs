@@ -4,10 +4,12 @@ namespace Domain.UnitTests.Entities;
 
 public class ClienteTests
 {
+    private static readonly Guid TenantId = Guid.NewGuid();
+
     [Fact]
     public void CriarComNomeValidoDeveCriarCliente()
     {
-        var cliente = Cliente.Criar("Cliente Teste", "123", "11999990000", "cliente@teste.com", "Rua A");
+        var cliente = Cliente.Criar(TenantId, "Cliente Teste", "123", "11999990000", "cliente@teste.com", "Rua A");
 
         Assert.NotEqual(Guid.Empty, cliente.Id);
         Assert.Equal("Cliente Teste", cliente.Nome);
@@ -16,13 +18,13 @@ public class ClienteTests
     [Fact]
     public void CriarComNomeVazioDeveLancarArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => Cliente.Criar(" ", null, null, null, null));
+        Assert.Throws<ArgumentException>(() => Cliente.Criar(TenantId, " ", null, null, null, null));
     }
 
     [Fact]
     public void AtualizarDeveAtualizarDados()
     {
-        var cliente = Cliente.Criar("Cliente Teste", "123", "11999990000", "cliente@teste.com", "Rua A");
+        var cliente = Cliente.Criar(TenantId, "Cliente Teste", "123", "11999990000", "cliente@teste.com", "Rua A");
 
         cliente.Atualizar("Cliente Novo", "999", "11888880000", "novo@teste.com", "Rua B");
 

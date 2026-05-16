@@ -1,3 +1,4 @@
+using Infrastructure.Multitenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -11,10 +12,11 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
 
         var builder = new DbContextOptionsBuilder<AppDbContext>();
         
-        var connectionString = "Server=localhost;Database=os_db;Uid=root;Pwd=root;";
+        var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
+            ?? "Server=localhost;Database=os_db;Uid=root;Pwd=root;";
 
         builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
-        return new AppDbContext(builder.Options);
+        return new AppDbContext(builder.Options, new DesignTimeTenantContext());
     }
 }

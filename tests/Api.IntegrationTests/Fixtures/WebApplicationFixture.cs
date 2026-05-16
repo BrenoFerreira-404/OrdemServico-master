@@ -1,3 +1,5 @@
+using Application.Interfaces;
+using Infrastructure.Multitenancy;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +12,16 @@ public sealed class WebApplicationFixture : WebApplicationFactory<Program>, IAsy
 {
     protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
     {
+        builder.UseSetting(Microsoft.AspNetCore.Hosting.WebHostDefaults.EnvironmentKey, "Testing");
+
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<AppDbContext>();
+            services.RemoveAll<ITenantContext>();
+
+            services.AddHttpContextAccessor();
+            services.AddScoped<ITenantContext, TenantContext>();
 
             var inMemoryProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()
@@ -50,5 +58,8 @@ public sealed class WebApplicationFixture : WebApplicationFactory<Program>, IAsy
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Database.EnsureDeletedAsync();
         await db.Database.EnsureCreatedAsync();
+
+        var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+        await seeder.SeedAsync();
     }
 }

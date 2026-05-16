@@ -1,6 +1,7 @@
 using Api.Endpoints;
 using Api.Middlewares;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Extensions;
 
@@ -11,8 +12,10 @@ public static class WebApplicationExtensions
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            // Cria as tabelas do MySQL baseando-se nas Entities e Configurations sem precisar de Migrations.
-            dbContext.Database.EnsureCreated();
+            if (app.Environment.IsEnvironment("Testing"))
+                dbContext.Database.EnsureCreated();
+            else
+                dbContext.Database.Migrate();
 
             // Seed de dados iniciais (so insere se o banco estiver vazio)
             var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
@@ -33,11 +36,13 @@ public static class WebApplicationExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseMiddleware<TenantHeaderValidationMiddleware>();
 
         app.UseHttpsRedirection();
 
         // Endpoints genéricos (minimal APIs root extension methods)
         app.MapAuthEndpoints();
+        app.MapTenantEndpoints();
         app.MapClienteEndpoints();
         app.MapEquipamentoEndpoints();
         app.MapOrdemServicoEndpoints();

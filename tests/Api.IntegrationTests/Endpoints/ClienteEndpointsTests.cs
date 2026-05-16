@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Api.IntegrationTests.Fixtures;
+using Api.IntegrationTests.Helpers;
 using Api.IntegrationTests.TestData;
 using Application.DTOs.Clientes;
 
@@ -20,7 +21,7 @@ public class ClienteEndpointsTests
     public async Task PostEGetClienteDeveCriarERecuperarComSucesso()
     {
         await _fixture.ResetDatabaseAsync();
-        using var client = _fixture.CreateApiClient();
+        using var client = await ApiTestAuthHelper.CriarClienteAutenticadoAsync(_fixture.CreateApiClient());
 
         var request = OrdemServicoTestData.NovoCliente();
 

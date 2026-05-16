@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Api.IntegrationTests.Fixtures;
+using Api.IntegrationTests.Helpers;
 using Api.IntegrationTests.TestData;
 using Application.DTOs.Clientes;
 using Application.DTOs.OrdemServicos;
@@ -21,7 +22,7 @@ public class OrdemServicoEndpointsTests
     public async Task FluxoCompletoDeveCriarOSEConsultar()
     {
         await _fixture.ResetDatabaseAsync();
-        using var client = _fixture.CreateApiClient();
+        using var client = await ApiTestAuthHelper.CriarClienteAutenticadoAsync(_fixture.CreateApiClient());
 
         var clienteRequest = OrdemServicoTestData.NovoCliente();
         var clienteResponse = await client.PostAsJsonAsync("/api/clientes/", clienteRequest);

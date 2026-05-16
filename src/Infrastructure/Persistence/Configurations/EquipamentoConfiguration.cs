@@ -11,6 +11,15 @@ public sealed class EquipamentoConfiguration : IEntityTypeConfiguration<Equipame
         builder.ToTable("equipamentos");
         
         builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.TenantId).IsRequired();
+
+        builder.HasIndex(x => new { x.TenantId, x.ClienteId });
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder.Property(x => x.Tipo)
             .IsRequired()

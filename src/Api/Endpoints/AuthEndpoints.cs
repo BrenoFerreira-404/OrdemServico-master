@@ -34,10 +34,12 @@ public static class AuthEndpoints
 
         group.MapPost("/registrar", async (RegistrarUsuarioRequest request, IAuthService service, HttpContext http, CancellationToken ct) =>
         {
-            var tenantIdClaim = http.User.FindFirst("tenant_id")?.Value;
-            Guid? tenantId = !string.IsNullOrWhiteSpace(tenantIdClaim) ? Guid.Parse(tenantIdClaim) : null;
+            Guid? tenantIdClaim = null;
+            var tenantIdClaimValue = http.User.FindFirst("tenant_id")?.Value;
+            if (!string.IsNullOrWhiteSpace(tenantIdClaimValue))
+                tenantIdClaim = Guid.Parse(tenantIdClaimValue);
 
-            var response = await service.RegistrarAsync(request, tenantId, ct);
+            var response = await service.RegistrarAsync(request, request.TenantId ?? tenantIdClaim, ct);
             return Results.Created($"/api/auth/me", response);
         })
         .AddEndpointFilter<ValidationFilter<RegistrarUsuarioRequest>>()

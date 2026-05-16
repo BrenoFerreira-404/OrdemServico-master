@@ -15,6 +15,7 @@ public sealed partial class AuthService : IAuthService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITokenService _tokenService;
     private readonly IIdentityService _identityService;
+    private readonly ITenantContext _tenantContext;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
@@ -22,12 +23,14 @@ public sealed partial class AuthService : IAuthService
         IUnitOfWork unitOfWork,
         ITokenService tokenService,
         IIdentityService identityService,
+        ITenantContext tenantContext,
         ILogger<AuthService> logger)
     {
         _usuarioRepository = usuarioRepository;
         _unitOfWork = unitOfWork;
         _tokenService = tokenService;
         _identityService = identityService;
+        _tenantContext = tenantContext;
         _logger = logger;
     }
 
@@ -98,6 +101,8 @@ public sealed partial class AuthService : IAuthService
         if (request.Cargo == CargoUsuario.SuperAdmin)
             throw new DomainException("Nao e possivel registrar um SuperAdmin por esta via.");
 
+        var tenantIdEfetivo = ResolverTenantIdParaRegistro(request, tenantId);
+
         var existente = await _usuarioRepository.ObterPorEmailAsync(request.Email, cancellationToken);
         if (existente is not null)
             throw new DomainException("Ja existe um usuario com este email.");
@@ -108,7 +113,7 @@ public sealed partial class AuthService : IAuthService
 
         await _identityService.AdicionarAoCargoAsync(identityUserId, request.Cargo.ToString(), cancellationToken);
 
-        var usuario = Usuario.Criar(request.Nome, request.Email, request.Cargo, identityUserId, tenantId);
+        var usuario = Usuario.Criar(request.Nome, request.Email, request.Cargo, identityUserId, tenantIdEfetivo);
 
         await _usuarioRepository.AdicionarAsync(usuario, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
@@ -154,6 +159,14 @@ public sealed partial class AuthService : IAuthService
     {
         var usuario = await _usuarioRepository.ObterPorIdAsync(usuarioId, cancellationToken);
         return usuario?.ToResponse();
+    }
+
+    private Guid? ResolverTenantIdParaRegistro(RegistrarUsuarioRequest request, Guid? tenantIdInformado)
+    {
+        if (_tenantContext.IsSuperAdmin)
+            return request.TenantId ?? tenantIdInformado;
+
+        return _tenantContext.ObterTenantIdObrigatorio();
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Tentativa de login com credenciais invalidas para {Email}")]

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Domain.Interfaces;
 using Application.Interfaces;
+using Infrastructure.Multitenancy;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Identity;
@@ -20,6 +21,9 @@ public static class DependencyInjection
         var dbConnectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("A connection string 'DefaultConnection' nao foi configurada.");
         var redisConnectionString = configuration.GetConnectionString("RedisConnection");
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<ITenantContext, TenantContext>();
 
         // EF Core + MySQL
         services.AddDbContext<AppDbContext>(options =>
@@ -47,6 +51,7 @@ public static class DependencyInjection
         services.AddScoped<IEquipamentoRepository, EquipamentoRepository>();
         services.AddScoped<IOrdemServicoRepository, OrdemServicoRepository>();
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
 
         // Identity + Token services
         services.AddScoped<IIdentityService, IdentityService>();

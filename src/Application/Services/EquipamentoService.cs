@@ -11,12 +11,18 @@ public sealed class EquipamentoService : IEquipamentoService
     private readonly IEquipamentoRepository _equipamentoRepository;
     private readonly IClienteRepository _clienteRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITenantContext _tenantContext;
 
-    public EquipamentoService(IEquipamentoRepository equipamentoRepository, IClienteRepository clienteRepository, IUnitOfWork unitOfWork)
+    public EquipamentoService(
+        IEquipamentoRepository equipamentoRepository,
+        IClienteRepository clienteRepository,
+        IUnitOfWork unitOfWork,
+        ITenantContext tenantContext)
     {
         _equipamentoRepository = equipamentoRepository;
         _clienteRepository = clienteRepository;
         _unitOfWork = unitOfWork;
+        _tenantContext = tenantContext;
     }
 
     public async Task<EquipamentoResponse> CriarAsync(CriarEquipamentoRequest request, CancellationToken cancellationToken = default)
@@ -24,7 +30,7 @@ public sealed class EquipamentoService : IEquipamentoService
         var cliente = await _clienteRepository.ObterPorIdAsync(request.ClienteId, cancellationToken);
         if (cliente is null) throw new DomainException("Cliente não encontrado.");
 
-        var eqp = Equipamento.Criar(request.ClienteId, request.Tipo, request.Marca, request.Modelo, request.NumeroSerie);
+        var eqp = Equipamento.Criar(cliente.TenantId, request.ClienteId, request.Tipo, request.Marca, request.Modelo, request.NumeroSerie);
         
         await _equipamentoRepository.AdicionarAsync(eqp, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
