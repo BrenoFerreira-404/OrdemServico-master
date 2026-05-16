@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.ValueObjects;
@@ -35,13 +36,14 @@ public sealed partial class DatabaseSeeder
     {
         await SeedRolesAsync();
         await SeedSuperAdminAsync(cancellationToken);
+        await SeedTenantDemonstracaoAsync(cancellationToken);
 
-        if (await _context.Clientes.AnyAsync(cancellationToken))
+        if (await _context.Clientes.IgnoreQueryFilters().AnyAsync(cancellationToken))
         {
             return;
         }
 
-        await ExecutarSeedAsync(cancellationToken);
+        await ExecutarSeedAsync(TenantSeedConstants.DemonstracaoId, cancellationToken);
     }
 
     public async Task ForceSeedAsync(CancellationToken cancellationToken = default)
@@ -56,9 +58,10 @@ public sealed partial class DatabaseSeeder
         _context.OrdensServico.RemoveRange(_context.OrdensServico);
         _context.Equipamentos.RemoveRange(_context.Equipamentos);
         _context.Clientes.RemoveRange(_context.Clientes);
+        _context.Usuarios.RemoveRange(_context.Usuarios.IgnoreQueryFilters().Where(u => u.Cargo != CargoUsuario.SuperAdmin));
         await _context.SaveChangesAsync(cancellationToken);
 
-        await ExecutarSeedAsync(cancellationToken);
+        await ExecutarSeedAsync(TenantSeedConstants.DemonstracaoId, cancellationToken);
     }
 
     private async Task SeedRolesAsync()
@@ -111,18 +114,82 @@ public sealed partial class DatabaseSeeder
         LogSuperAdminCriado(_logger, email);
     }
 
-    private async Task ExecutarSeedAsync(CancellationToken cancellationToken)
+    private async Task SeedTenantDemonstracaoAsync(CancellationToken cancellationToken)
+    {
+        if (await _context.Tenants.AnyAsync(t => t.Id == TenantSeedConstants.DemonstracaoId, cancellationToken))
+        {
+            await SeedAdminDemonstracaoAsync(cancellationToken);
+            return;
+        }
+
+        var tenant = Tenant.CriarComId(
+            TenantSeedConstants.DemonstracaoId,
+            TenantSeedConstants.DemonstracaoNome,
+            TenantSeedConstants.DemonstracaoSlug);
+
+        await _context.Tenants.AddAsync(tenant, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        LogTenantCriado(_logger, tenant.Nome);
+
+        await SeedAdminDemonstracaoAsync(cancellationToken);
+    }
+
+    private async Task SeedAdminDemonstracaoAsync(CancellationToken cancellationToken)
+    {
+        if (await _context.Usuarios.IgnoreQueryFilters()
+                .AnyAsync(u => u.Email == TenantSeedConstants.AdminDemoEmail, cancellationToken))
+            return;
+
+        var email = TenantSeedConstants.AdminDemoEmail;
+        var senha = TenantSeedConstants.AdminDemoSenha;
+
+        var identityUser = await _userManager.FindByEmailAsync(email);
+        if (identityUser is null)
+        {
+            identityUser = new AppIdentityUser
+            {
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(identityUser, senha);
+            if (!result.Succeeded)
+            {
+                LogAdminDemoFalha(_logger, email, string.Join(", ", result.Errors.Select(e => e.Description)));
+                return;
+            }
+        }
+
+        if (!await _userManager.IsInRoleAsync(identityUser, "Admin"))
+            await _userManager.AddToRoleAsync(identityUser, "Admin");
+
+        var usuario = Usuario.Criar(
+            "Administrador Demo",
+            email,
+            CargoUsuario.Admin,
+            identityUser.Id,
+            TenantSeedConstants.DemonstracaoId);
+
+        await _context.Usuarios.AddAsync(usuario, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        LogAdminDemoCriado(_logger, email);
+    }
+
+    private async Task ExecutarSeedAsync(Guid tenantId, CancellationToken cancellationToken)
     {
 
         // =============================================
         // CLIENTES
         // =============================================
-        var maria = Cliente.Criar("Maria Silva", "123.456.789-00", "(11) 99876-5432", "maria.silva@email.com", "Rua das Flores, 123 - Centro, Sao Paulo/SP");
-        var joao = Cliente.Criar("Joao Santos", "987.654.321-00", "(21) 98765-4321", "joao.santos@gmail.com", "Av. Brasil, 456 - Copacabana, Rio de Janeiro/RJ");
-        var ana = Cliente.Criar("Ana Costa Oliveira", "456.789.123-00", "(31) 97654-3210", "ana.costa@hotmail.com", "Rua Minas Gerais, 789 - Savassi, Belo Horizonte/MG");
-        var carlos = Cliente.Criar("Carlos Ferreira", "321.654.987-00", "(41) 96543-2109", "carlos.ferreira@empresa.com.br", "Rua XV de Novembro, 321 - Centro, Curitiba/PR");
-        var lucia = Cliente.Criar("Lucia Rodrigues", "654.321.987-00", "(51) 95432-1098", null, "Av. Ipiranga, 654 - Partenon, Porto Alegre/RS");
-        var pedro = Cliente.Criar("Pedro Almeida ME", "12.345.678/0001-90", "(11) 3456-7890", "contato@pedroalmeida.com.br", "Rua Augusta, 1500 - Consolacao, Sao Paulo/SP");
+        var maria = Cliente.Criar(tenantId, "Maria Silva", "123.456.789-00", "(11) 99876-5432", "maria.silva@email.com", "Rua das Flores, 123 - Centro, Sao Paulo/SP");
+        var joao = Cliente.Criar(tenantId, "Joao Santos", "987.654.321-00", "(21) 98765-4321", "joao.santos@gmail.com", "Av. Brasil, 456 - Copacabana, Rio de Janeiro/RJ");
+        var ana = Cliente.Criar(tenantId, "Ana Costa Oliveira", "456.789.123-00", "(31) 97654-3210", "ana.costa@hotmail.com", "Rua Minas Gerais, 789 - Savassi, Belo Horizonte/MG");
+        var carlos = Cliente.Criar(tenantId, "Carlos Ferreira", "321.654.987-00", "(41) 96543-2109", "carlos.ferreira@empresa.com.br", "Rua XV de Novembro, 321 - Centro, Curitiba/PR");
+        var lucia = Cliente.Criar(tenantId, "Lucia Rodrigues", "654.321.987-00", "(51) 95432-1098", null, "Av. Ipiranga, 654 - Partenon, Porto Alegre/RS");
+        var pedro = Cliente.Criar(tenantId, "Pedro Almeida ME", "12.345.678/0001-90", "(11) 3456-7890", "contato@pedroalmeida.com.br", "Rua Augusta, 1500 - Consolacao, Sao Paulo/SP");
 
         await _context.Clientes.AddRangeAsync(new[] { maria, joao, ana, carlos, lucia, pedro }, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
@@ -130,21 +197,21 @@ public sealed partial class DatabaseSeeder
         // =============================================
         // EQUIPAMENTOS
         // =============================================
-        var notebookMaria = Equipamento.Criar(maria.Id, "Notebook", "Dell", "Inspiron 15 5000", "SN-DELL-2024-001");
-        var celularMaria = Equipamento.Criar(maria.Id, "Celular", "Samsung", "Galaxy S24", "IMEI-SAM-2024-555");
+        var notebookMaria = Equipamento.Criar(tenantId, maria.Id, "Notebook", "Dell", "Inspiron 15 5000", "SN-DELL-2024-001");
+        var celularMaria = Equipamento.Criar(tenantId, maria.Id, "Celular", "Samsung", "Galaxy S24", "IMEI-SAM-2024-555");
 
-        var notebookJoao = Equipamento.Criar(joao.Id, "Notebook", "Apple", "MacBook Pro 14\"", "SN-APPLE-C02X1234");
-        var impressoraJoao = Equipamento.Criar(joao.Id, "Impressora", "HP", "LaserJet Pro M404dn", "SN-HP-LJ-78901");
+        var notebookJoao = Equipamento.Criar(tenantId, joao.Id, "Notebook", "Apple", "MacBook Pro 14\"", "SN-APPLE-C02X1234");
+        var impressoraJoao = Equipamento.Criar(tenantId, joao.Id, "Impressora", "HP", "LaserJet Pro M404dn", "SN-HP-LJ-78901");
 
-        var desktopAna = Equipamento.Criar(ana.Id, "Desktop", "Lenovo", "ThinkCentre M90q", "SN-LEN-TC-45678");
-        var monitorAna = Equipamento.Criar(ana.Id, "Monitor", "LG", "UltraWide 34WN80C", "SN-LG-MON-11223");
+        var desktopAna = Equipamento.Criar(tenantId, ana.Id, "Desktop", "Lenovo", "ThinkCentre M90q", "SN-LEN-TC-45678");
+        var monitorAna = Equipamento.Criar(tenantId, ana.Id, "Monitor", "LG", "UltraWide 34WN80C", "SN-LG-MON-11223");
 
-        var notebookCarlos = Equipamento.Criar(carlos.Id, "Notebook", "Asus", "VivoBook S15", "SN-ASUS-VB-99887");
+        var notebookCarlos = Equipamento.Criar(tenantId, carlos.Id, "Notebook", "Asus", "VivoBook S15", "SN-ASUS-VB-99887");
 
-        var celularLucia = Equipamento.Criar(lucia.Id, "Celular", "Apple", "iPhone 15 Pro", "IMEI-APPLE-2024-777");
+        var celularLucia = Equipamento.Criar(tenantId, lucia.Id, "Celular", "Apple", "iPhone 15 Pro", "IMEI-APPLE-2024-777");
 
-        var servidorPedro = Equipamento.Criar(pedro.Id, "Servidor", "Dell", "PowerEdge T340", "SN-DELL-PE-44556");
-        var notebookPedro = Equipamento.Criar(pedro.Id, "Notebook", "HP", "EliteBook 840 G9", "SN-HP-EB-33445");
+        var servidorPedro = Equipamento.Criar(tenantId, pedro.Id, "Servidor", "Dell", "PowerEdge T340", "SN-DELL-PE-44556");
+        var notebookPedro = Equipamento.Criar(tenantId, pedro.Id, "Notebook", "HP", "EliteBook 840 G9", "SN-HP-EB-33445");
 
         await _context.Equipamentos.AddRangeAsync(new[]
         {
@@ -159,7 +226,7 @@ public sealed partial class DatabaseSeeder
         // =============================================
 
         // --- OS 1: Maria - Notebook Dell - Fluxo COMPLETO (Entregue) ---
-        var os1 = OrdemServico.Criar(maria.Id, notebookMaria.Id,
+        var os1 = OrdemServico.Criar(tenantId, maria.Id, notebookMaria.Id,
             "Notebook nao liga, sem reacao ao pressionar botao power. Cliente informa que houve queda da mesa ontem.",
             "3 horas", "Notebook com marcas de impacto na lateral esquerda", null, null, null);
         os1.DefinirNumeroOS(NumeroOS.Gerar(DateTime.UtcNow.AddDays(-10), 1));
@@ -181,7 +248,7 @@ public sealed partial class DatabaseSeeder
         os1.FinalizarEEntregar();
 
         // --- OS 2: Joao - MacBook - Em Orcamento ---
-        var os2 = OrdemServico.Criar(joao.Id, notebookJoao.Id,
+        var os2 = OrdemServico.Criar(tenantId, joao.Id, notebookJoao.Id,
             "Tela com manchas escuras na parte inferior. Apareceu gradualmente nos ultimos 2 meses.",
             "5 dias uteis", "Equipamento em bom estado geral, sem danos fisicos visiveis", null,
             DateOnly.FromDateTime(DateTime.Today.AddDays(15)),
@@ -195,7 +262,7 @@ public sealed partial class DatabaseSeeder
         os2.MarcarComoOrcamento();
 
         // --- OS 3: Ana - Desktop Lenovo - Em Andamento ---
-        var os3 = OrdemServico.Criar(ana.Id, desktopAna.Id,
+        var os3 = OrdemServico.Criar(tenantId, ana.Id, desktopAna.Id,
             "Computador reiniciando sozinho a cada 20 minutos. Tela azul com erro WHEA_UNCORRECTABLE_ERROR.",
             "2 dias", "Problema comecou apos atualizacao do Windows", null, null,
             DateOnly.FromDateTime(DateTime.Today.AddDays(3)));
@@ -209,14 +276,14 @@ public sealed partial class DatabaseSeeder
         os3.IniciarAndamento();
 
         // --- OS 4: Carlos - Notebook Asus - Rascunho ---
-        var os4 = OrdemServico.Criar(carlos.Id, notebookCarlos.Id,
+        var os4 = OrdemServico.Criar(tenantId, carlos.Id, notebookCarlos.Id,
             "Teclado com teclas falhando: Enter, Espaco e setas nao respondem. Derramou cafe no teclado ha 3 dias.",
             "1 hora", "Liquido visivel sob as teclas afetadas", "Protocolo anterior: 2024-0088", null, null);
         os4.DefinirNumeroOS(NumeroOS.Gerar(DateTime.UtcNow.AddDays(-1), 1));
         os4.AdicionarServico("Limpeza e avaliacao de dano por liquido", 1, 80.00m);
 
         // --- OS 5: Lucia - iPhone - Concluida (aguardando pagamento/entrega) ---
-        var os5 = OrdemServico.Criar(lucia.Id, celularLucia.Id,
+        var os5 = OrdemServico.Criar(tenantId, lucia.Id, celularLucia.Id,
             "Bateria nao dura mais que 2 horas. Aparelho esquenta bastante durante uso normal.",
             "40 minutos", "Saude da bateria em 62% segundo diagnostico Apple", null, null, null);
         os5.DefinirNumeroOS(NumeroOS.Gerar(DateTime.UtcNow.AddDays(-4), 1));
@@ -230,7 +297,7 @@ public sealed partial class DatabaseSeeder
         os5.ConcluirTrabalho();
 
         // --- OS 6: Pedro (empresa) - Servidor Dell - Aguardando Peca ---
-        var os6 = OrdemServico.Criar(pedro.Id, servidorPedro.Id,
+        var os6 = OrdemServico.Criar(tenantId, pedro.Id, servidorPedro.Id,
             "Servidor com ruido excessivo no fan 2. Alerta de temperatura no iDRAC. Disco RAID 5 com 1 disco em estado Warning.",
             "1 dia", "Equipamento em producao - necessita janela de manutencao", "Contrato SLA-2024-055", null,
             DateOnly.FromDateTime(DateTime.Today.AddDays(5)));
@@ -251,7 +318,7 @@ public sealed partial class DatabaseSeeder
         os6.PausarAguardandoPeca();
 
         // --- OS 7: Joao - Impressora HP - Rejeitada ---
-        var os7 = OrdemServico.Criar(joao.Id, impressoraJoao.Id,
+        var os7 = OrdemServico.Criar(tenantId, joao.Id, impressoraJoao.Id,
             "Impressora nao puxa papel. Rolos de tracao parecem gastos.",
             "30 minutos", null, null,
             DateOnly.FromDateTime(DateTime.Today.AddDays(7)), null);
@@ -264,7 +331,7 @@ public sealed partial class DatabaseSeeder
         os7.Rejeitar();
 
         // --- OS 8: Maria - Celular Samsung - Rascunho (sem itens) ---
-        var os8 = OrdemServico.Criar(maria.Id, celularMaria.Id,
+        var os8 = OrdemServico.Criar(tenantId, maria.Id, celularMaria.Id,
             "Tela trincada apos queda. Touch funciona parcialmente - lado direito nao responde.",
             "1 hora", "Pelicula protetora estilhacada junto com a tela", null, null, null);
         os8.DefinirNumeroOS(NumeroOS.Gerar(DateTime.UtcNow, 2));
@@ -281,4 +348,13 @@ public sealed partial class DatabaseSeeder
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Falha ao criar Super Admin '{Email}': {Erros}")]
     private static partial void LogSuperAdminFalha(ILogger logger, string email, string erros);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Tenant de demonstracao criado: {Nome}")]
+    private static partial void LogTenantCriado(ILogger logger, string nome);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Admin demo criado com sucesso: {Email}")]
+    private static partial void LogAdminDemoCriado(ILogger logger, string email);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Falha ao criar Admin demo '{Email}': {Erros}")]
+    private static partial void LogAdminDemoFalha(ILogger logger, string email, string erros);
 }

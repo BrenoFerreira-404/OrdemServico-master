@@ -12,6 +12,15 @@ public sealed class OrdemServicoConfiguration : IEntityTypeConfiguration<OrdemSe
         
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.TenantId).IsRequired();
+
+        builder.HasIndex(x => new { x.TenantId, x.CreatedAt });
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Value Object - NumeroOS manipulado como ComplexType sem tabela separada
         builder.OwnsOne(x => x.Numero, numero =>
         {
@@ -19,8 +28,9 @@ public sealed class OrdemServicoConfiguration : IEntityTypeConfiguration<OrdemSe
                   .HasColumnName("numero")
                   .HasMaxLength(20)
                   .IsRequired();
-            numero.HasIndex(n => n.Valor).IsUnique();
         });
+
+        // Indice unico (TenantId, numero) aplicado na migration — owned type nao suporta HasIndex composto no modelo.
 
         // Value Object - DescontoAplicado (pode ser null)
         builder.OwnsOne(x => x.DescontoAplicado, desconto =>

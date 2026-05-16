@@ -1,6 +1,7 @@
 using Application.DTOs.Auth;
 using Application.Interfaces;
 using Application.Services;
+using Application.UnitTests.Helpers;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -16,6 +17,7 @@ public sealed class AuthServiceTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<ITokenService> _tokenServiceMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
+    private readonly Mock<ITenantContext> _tenantContextMock = TenantContextMockFactory.Criar(TenantIdTeste);
     private readonly Mock<ILogger<AuthService>> _loggerMock = new();
     private readonly AuthService _sut;
 
@@ -31,6 +33,7 @@ public sealed class AuthServiceTests
             _unitOfWorkMock.Object,
             _tokenServiceMock.Object,
             _identityServiceMock.Object,
+            _tenantContextMock.Object,
             _loggerMock.Object);
     }
 

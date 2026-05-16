@@ -1,5 +1,6 @@
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Interfaces;
 using Domain.ValueObjects;
 
 namespace Domain.Entities;
@@ -7,9 +8,10 @@ namespace Domain.Entities;
 /// <summary>
 /// Aggregate Root que orquestra todo o modelo e fluxo da Ordem de Serviço.
 /// </summary>
-public sealed class OrdemServico
+public sealed class OrdemServico : ITenantEntidade
 {
     public Guid Id { get; private set; }
+    public Guid TenantId { get; private set; }
 
     // Configurado no EF para nunca ser null ao instanciar via ORM. Initialize-lo previne warnings em propriedades `required`.
     public NumeroOS Numero { get; private set; } = default!;
@@ -56,6 +58,7 @@ public sealed class OrdemServico
     private OrdemServico() { }
 
     public static OrdemServico Criar(
+        Guid tenantId,
         Guid clienteId,
         Guid? equipamentoId,
         string defeito,
@@ -65,6 +68,9 @@ public sealed class OrdemServico
         DateOnly? validadeOrcamento,
         DateOnly? prazoEntrega)
     {
+        if (tenantId == Guid.Empty)
+            throw new ArgumentException("O tenant da ordem de servico e obrigatorio.", nameof(tenantId));
+
         if (clienteId == Guid.Empty)
             throw new ArgumentException("Cliente é obrigatório.", nameof(clienteId));
 
@@ -76,6 +82,7 @@ public sealed class OrdemServico
         return new OrdemServico
         {
             Id = Guid.NewGuid(),
+            TenantId = tenantId,
             // Número será setado no momento de inclusão com a sequência e data via Repositório/DB. Default temporário.
             Status = StatusOS.Rascunho,
             ClienteId = clienteId,

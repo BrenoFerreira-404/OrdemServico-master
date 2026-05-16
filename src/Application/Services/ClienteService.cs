@@ -12,12 +12,18 @@ public sealed partial class ClienteService : IClienteService
 {
     private readonly IClienteRepository _clienteRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITenantContext _tenantContext;
     private readonly ILogger<ClienteService> _logger;
 
-    public ClienteService(IClienteRepository clienteRepository, IUnitOfWork unitOfWork, ILogger<ClienteService> logger)
+    public ClienteService(
+        IClienteRepository clienteRepository,
+        IUnitOfWork unitOfWork,
+        ITenantContext tenantContext,
+        ILogger<ClienteService> logger)
     {
         _clienteRepository = clienteRepository;
         _unitOfWork = unitOfWork;
+        _tenantContext = tenantContext;
         _logger = logger;
     }
 
@@ -29,7 +35,8 @@ public sealed partial class ClienteService : IClienteService
             if (existe) throw new DomainException("Já existe um cliente com este documento.");
         }
 
-        var cliente = Cliente.Criar(request.Nome, request.Documento, request.Telefone, request.Email, request.Endereco);
+        var tenantId = _tenantContext.ObterTenantIdObrigatorio();
+        var cliente = Cliente.Criar(tenantId, request.Nome, request.Documento, request.Telefone, request.Email, request.Endereco);
         
         await _clienteRepository.AdicionarAsync(cliente, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);

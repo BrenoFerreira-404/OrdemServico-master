@@ -20,12 +20,17 @@ public sealed class UsuarioRepository : IUsuarioRepository
 
     public async Task<Usuario?> ObterPorEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _context.Usuarios.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+        // Email e unico globalmente; login ocorre antes do tenant estar no contexto HTTP.
+        return await _context.Usuarios
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
     }
 
     public async Task<Usuario?> ObterPorIdentityUserIdAsync(string identityUserId, CancellationToken cancellationToken = default)
     {
-        return await _context.Usuarios.FirstOrDefaultAsync(x => x.IdentityUserId == identityUserId, cancellationToken);
+        return await _context.Usuarios
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.IdentityUserId == identityUserId, cancellationToken);
     }
 
     public async Task AdicionarAsync(Usuario usuario, CancellationToken cancellationToken = default)

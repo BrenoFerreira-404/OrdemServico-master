@@ -7,5 +7,6 @@ public sealed record RegistrarUsuarioRequest(
     string Email,
     string Senha,
     string ConfirmarSenha,
-    CargoUsuario Cargo
+    CargoUsuario Cargo,
+    Guid? TenantId = null
 );

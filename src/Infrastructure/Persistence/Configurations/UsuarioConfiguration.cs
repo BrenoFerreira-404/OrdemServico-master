@@ -30,5 +30,10 @@ public sealed class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
 
         builder.Property(x => x.Cargo)
             .HasConversion<int>();
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Api.Endpoints;
 using Api.Options;
@@ -29,6 +30,7 @@ public static class ServiceCollectionExtensions
         })
         .AddJwtBearer(options =>
         {
+            options.MapInboundClaims = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -47,15 +49,27 @@ public static class ServiceCollectionExtensions
             options.AddPolicy("AdminOuSuperAdmin", policy =>
                 policy.RequireAssertion(context =>
                 {
-                    var roleClaim = context.User.FindFirst("role")?.Value;
-                    return roleClaim is "SuperAdmin" or "Admin";
+                    var cargo = ObterCargo(context.User);
+                    return cargo is "SuperAdmin" or "Admin";
                 }));
+
+            options.AddPolicy("SuperAdmin", policy =>
+                policy.RequireAssertion(context =>
+                    string.Equals(ObterCargo(context.User), "SuperAdmin", StringComparison.OrdinalIgnoreCase)));
         });
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ordem de Serviço API", Version = "v1" });
+
+            c.AddSecurityDefinition("TenantHeader", new OpenApiSecurityScheme
+            {
+                Name = "X-Tenant-Id",
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header,
+                Description = "SuperAdmin: informe o tenant alvo para operar dados de um tenant especifico."
+            });
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
@@ -119,4 +133,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    private static string? ObterCargo(ClaimsPrincipal user) =>
+        user.FindFirst("role")?.Value ?? user.FindFirst(ClaimTypes.Role)?.Value;
 }

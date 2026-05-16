@@ -1,11 +1,14 @@
+using Domain.Interfaces;
+
 namespace Domain.Entities;
 
 /// <summary>
 /// Equipamento registrado para o cliente (mantém o histórico do equipamento sob serviços do cliente).
 /// </summary>
-public sealed class Equipamento
+public sealed class Equipamento : ITenantEntidade
 {
     public Guid Id { get; private set; }
+    public Guid TenantId { get; private set; }
     public Guid ClienteId { get; private set; }
 
     public string Tipo { get; private set; } = string.Empty; // Ex: Celular, Notebook, Geladeira
@@ -18,8 +21,11 @@ public sealed class Equipamento
 
     private Equipamento() { }
 
-    public static Equipamento Criar(Guid clienteId, string tipo, string? marca, string? modelo, string? numeroSerie)
+    public static Equipamento Criar(Guid tenantId, Guid clienteId, string tipo, string? marca, string? modelo, string? numeroSerie)
     {
+        if (tenantId == Guid.Empty)
+            throw new ArgumentException("O tenant do equipamento e obrigatorio.", nameof(tenantId));
+
         if (clienteId == Guid.Empty)
             throw new ArgumentException("O equipamento deve pertencer a um cliente.", nameof(clienteId));
 
@@ -31,6 +37,7 @@ public sealed class Equipamento
         return new Equipamento
         {
             Id = Guid.NewGuid(),
+            TenantId = tenantId,
             ClienteId = clienteId,
             Tipo = tipo,
             Marca = marca,
