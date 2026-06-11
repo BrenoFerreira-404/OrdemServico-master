@@ -318,11 +318,6 @@ public sealed class OrdemServicoDetalheViewModel : ViewModelBase
             localErrors["Anotacao.Texto"] = ["Texto da anotacao e obrigatorio."];
         }
 
-        if (string.IsNullOrWhiteSpace(AnotacaoForm.Autor))
-        {
-            localErrors["Anotacao.Autor"] = ["Autor da anotacao e obrigatorio."];
-        }
-
         if (localErrors.Count > 0)
         {
             ValidationErrors = localErrors;
@@ -335,7 +330,8 @@ public sealed class OrdemServicoDetalheViewModel : ViewModelBase
 
         var request = new AdicionarAnotacaoRequestModel(
             Texto: AnotacaoForm.Texto.Trim(),
-            Autor: AnotacaoForm.Autor.Trim());
+            UsuarioId: Guid.NewGuid(),
+            UsuarioNome: "Sistema");
 
         var payload = JsonSerializer.SerializeToNode(request, SerializerOptions) as JsonObject ?? new JsonObject();
         var result = await _ordensServicoApi.AdicionarAnotacaoAsync(osId, payload, cancellationToken);

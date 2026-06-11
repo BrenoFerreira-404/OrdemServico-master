@@ -10,6 +10,7 @@ namespace Domain.Entities;
 public sealed class OrdemServico
 {
     public Guid Id { get; private set; }
+    public Guid TenantId { get; private set; }
 
     // Configurado no EF para nunca ser null ao instanciar via ORM. Initialize-lo previne warnings em propriedades `required`.
     public NumeroOS Numero { get; private set; } = default!;
@@ -56,6 +57,7 @@ public sealed class OrdemServico
     private OrdemServico() { }
 
     public static OrdemServico Criar(
+        Guid tenantId,
         Guid clienteId,
         Guid? equipamentoId,
         string defeito,
@@ -65,6 +67,9 @@ public sealed class OrdemServico
         DateOnly? validadeOrcamento,
         DateOnly? prazoEntrega)
     {
+        if (tenantId == Guid.Empty)
+            throw new ArgumentException("O tenant é obrigatório.", nameof(tenantId));
+
         if (clienteId == Guid.Empty)
             throw new ArgumentException("Cliente é obrigatório.", nameof(clienteId));
 
@@ -76,6 +81,7 @@ public sealed class OrdemServico
         return new OrdemServico
         {
             Id = Guid.NewGuid(),
+            TenantId = tenantId,
             // Número será setado no momento de inclusão com a sequência e data via Repositório/DB. Default temporário.
             Status = StatusOS.Rascunho,
             ClienteId = clienteId,
@@ -174,9 +180,9 @@ public sealed class OrdemServico
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void AdicionarAnotacao(string texto, string autor)
+    public void AdicionarAnotacao(string texto, Guid autorId, string autorNome)
     {
-        _anotacoes.Add(OrdemServicoAnotacao.Criar(Id, texto, autor));
+        _anotacoes.Add(OrdemServicoAnotacao.Criar(Id, texto, autorId, autorNome));
         UpdatedAt = DateTime.UtcNow;
     }
 

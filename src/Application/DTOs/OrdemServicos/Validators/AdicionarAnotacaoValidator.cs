@@ -9,7 +9,7 @@ public sealed class AdicionarAnotacaoValidator : AbstractValidator<AdicionarAnot
         RuleFor(x => x.Texto)
             .NotEmpty().WithMessage("O texto da anotação é obrigatório.");
 
-        RuleFor(x => x.Autor)
-            .NotEmpty().WithMessage("O autor da anotação é obrigatório.");
+        RuleFor(x => x.UsuarioNome)
+            .NotEmpty().WithMessage("O nome do usuário é obrigatório.");
     }
 }

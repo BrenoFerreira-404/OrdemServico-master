@@ -12,24 +12,33 @@ public sealed partial class ClienteService : IClienteService
 {
     private readonly IClienteRepository _clienteRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITenantProvider _tenantProvider;
     private readonly ILogger<ClienteService> _logger;
 
-    public ClienteService(IClienteRepository clienteRepository, IUnitOfWork unitOfWork, ILogger<ClienteService> logger)
+    public ClienteService(
+        IClienteRepository clienteRepository,
+        IUnitOfWork unitOfWork,
+        ITenantProvider tenantProvider,
+        ILogger<ClienteService> logger)
     {
         _clienteRepository = clienteRepository;
         _unitOfWork = unitOfWork;
+        _tenantProvider = tenantProvider;
         _logger = logger;
     }
 
     public async Task<ClienteResponse> CriarAsync(CriarClienteRequest request, CancellationToken cancellationToken = default)
     {
+        var tenantId = _tenantProvider.TenantId
+            ?? throw new DomainException("Operacao requer um tenant valido.");
+
         if (!string.IsNullOrEmpty(request.Documento))
         {
             var existe = await _clienteRepository.ExistePorDocumentoAsync(request.Documento, cancellationToken);
-            if (existe) throw new DomainException("Já existe um cliente com este documento.");
+            if (existe) throw new DomainException("Ja existe um cliente com este documento.");
         }
 
-        var cliente = Cliente.Criar(request.Nome, request.Documento, request.Telefone, request.Email, request.Endereco);
+        var cliente = Cliente.Criar(tenantId, request.Nome, request.Documento, request.Telefone, request.Email, request.Endereco);
         
         await _clienteRepository.AdicionarAsync(cliente, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);

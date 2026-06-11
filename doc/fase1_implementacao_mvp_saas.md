@@ -28,7 +28,7 @@
 
 - [x] **F0** — Logging Estruturado (Serilog) — 8/8 tasks
 - [x] **F1** — Autenticacao (Identity + JWT) — 9/9 tasks
-- [ ] **F2** — Multi-Tenancy — 9 tasks
+- [x] **F2** — Multi-Tenancy — 9/9 tasks
 - [ ] **F3** — Usuarios, Roles e Super Admin — 8 tasks
 - [ ] **F4** — Audit Trail — 3 tasks
 - [ ] **F5** — Geracao de PDF — 4 tasks
@@ -36,7 +36,7 @@
 - [ ] **F7** — Dashboard com KPIs — 3 tasks
 - [ ] **F8** — Onboarding + Billing — 5 tasks
 
-> **Total: 17/52 tasks concluidas**
+> **Total: 26/52 tasks concluidas**
 
 ---
 
@@ -667,7 +667,7 @@ Para SaaS, cada empresa (tenant) deve ver SOMENTE seus dados. Um tecnico da empr
 
 ### Tasks
 
-- [ ] **F2-T1**: Entidade Tenant no Domain
+- [x] **F2-T1**: Entidade Tenant no Domain
   **Camada**: Domain
   **Arquivo**: `src/Domain/Entities/Tenant.cs`
 
@@ -718,7 +718,7 @@ Task<int> ContarAsync(CancellationToken ct = default);
 
 ---
 
-- [ ] **F2-T2**: Interface ITenantProvider no Domain
+- [x] **F2-T2**: Interface ITenantProvider no Domain
   **Camada**: Domain
   **Arquivo**: `src/Domain/Interfaces/ITenantProvider.cs`
 
@@ -734,7 +734,7 @@ public interface ITenantProvider
 
 ---
 
-- [ ] **F2-T3**: Adicionar TenantId em TODAS as entidades existentes
+- [x] **F2-T3**: Adicionar TenantId em TODAS as entidades existentes
   **Camada**: Domain
   **Arquivos modificados**:
 
@@ -749,7 +749,7 @@ public interface ITenantProvider
 
 ---
 
-- [ ] **F2-T4**: Global Query Filter no EF Core
+- [x] **F2-T4**: Global Query Filter no EF Core
   **Camada**: Infrastructure
   **Arquivo modificado**: `src/Infrastructure/Persistence/AppDbContext.cs`
 
@@ -804,7 +804,7 @@ public class AppDbContext : IdentityDbContext<AppIdentityUser>
 
 ---
 
-- [ ] **F2-T5**: Implementacao do TenantProvider
+- [x] **F2-T5**: Implementacao do TenantProvider
   **Camada**: Infrastructure
   **Arquivo novo**: `src/Infrastructure/Tenancy/HttpTenantProvider.cs`
 
@@ -839,7 +839,7 @@ Registrar no DI: `services.AddScoped<ITenantProvider, HttpTenantProvider>()`
 
 ---
 
-- [ ] **F2-T6**: Migration
+- [x] **F2-T6**: Migration
   **Migration**: `AddMultiTenancy`
 
 - Criar tabela `tenants` com todas as colunas
@@ -854,7 +854,7 @@ Registrar no DI: `services.AddScoped<ITenantProvider, HttpTenantProvider>()`
 
 ---
 
-- [ ] **F2-T7**: Atualizar Services existentes
+- [x] **F2-T7**: Atualizar Services existentes
   **Camada**: Application
   **Arquivos modificados**:
 
@@ -886,7 +886,7 @@ public sealed class ClienteService : IClienteService
 
 ---
 
-- [ ] **F2-T8**: Atualizar OrdemServicoAnotacao para rastrear UsuarioId
+- [x] **F2-T8**: Atualizar OrdemServicoAnotacao para rastrear UsuarioId
   **Camada**: Domain
   **Arquivo modificado**: `src/Domain/Entities/OrdemServicoAnotacao.cs`
 
@@ -902,7 +902,7 @@ Atualizar factory method `Criar()` e o `AdicionarAnotacaoRequest` para receber `
 
 ---
 
-- [ ] **F2-T9**: Testes de Multi-Tenancy
+- [x] **F2-T9**: Testes de Multi-Tenancy
 
 - Testar que factory method com `tenantId == Guid.Empty` lanca excecao
 - Testar que `ITenantProvider.EhSuperAdmin` desabilita query filter

@@ -114,6 +114,7 @@ public static class ServiceCollectionExtensions
         services.AddProblemDetails(); // Required for exception handler
 
         // Add layers
+        services.AddHttpContextAccessor();
         services.AddApplication();
         services.AddInfrastructure(configuration);
 

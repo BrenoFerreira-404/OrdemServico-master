@@ -7,6 +7,7 @@ namespace Domain.Entities;
 public sealed class Cliente
 {
     public Guid Id { get; private set; }
+    public Guid TenantId { get; private set; }
     public string Nome { get; private set; } = string.Empty;
     public string? Documento { get; private set; }
     public string? Telefone { get; private set; }
@@ -23,8 +24,11 @@ public sealed class Cliente
     /// <summary>
     /// Factory method para criação validada de Cliente.
     /// </summary>
-    public static Cliente Criar(string nome, string? documento, string? telefone, string? email, string? endereco)
+    public static Cliente Criar(Guid tenantId, string nome, string? documento, string? telefone, string? email, string? endereco)
     {
+        if (tenantId == Guid.Empty)
+            throw new ArgumentException("O tenant é obrigatório.", nameof(tenantId));
+
         if (string.IsNullOrWhiteSpace(nome))
             throw new ArgumentException("O nome do cliente é obrigatório.", nameof(nome));
 
@@ -33,6 +37,7 @@ public sealed class Cliente
         return new Cliente
         {
             Id = Guid.NewGuid(),
+            TenantId = tenantId,
             Nome = nome,
             Documento = documento,
             Telefone = telefone,

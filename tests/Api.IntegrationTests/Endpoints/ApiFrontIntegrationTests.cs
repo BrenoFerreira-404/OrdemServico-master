@@ -5,6 +5,7 @@ using Api.IntegrationTests.Fixtures;
 using Web.Models;
 using Web.Models.Responses;
 using Web.Services.Api;
+using Web.Services.Auth;
 
 namespace Api.IntegrationTests.Endpoints;
 
@@ -32,8 +33,9 @@ public sealed class ApiFrontIntegrationTests
             BaseUrl = "https://localhost",
             ApiKey = string.Empty
         });
+        var tokenStorage = new TokenStorage();
 
-        var apiClient = new ApiClient(httpClientFactory, new ApiErrorParser(), apiSettings);
+        var apiClient = new ApiClient(httpClientFactory, new ApiErrorParser(), apiSettings, tokenStorage);
         var clientesApi = new ClientesApi(apiClient);
         var equipamentosApi = new EquipamentosApi(apiClient);
         var ordensApi = new OrdensServicoApi(apiClient);

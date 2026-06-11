@@ -9,6 +9,7 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Identity;
 using Infrastructure.Caching;
+using Infrastructure.Tenancy;
 using StackExchange.Redis;
 
 namespace Infrastructure;
@@ -20,6 +21,9 @@ public static class DependencyInjection
         var dbConnectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("A connection string 'DefaultConnection' nao foi configurada.");
         var redisConnectionString = configuration.GetConnectionString("RedisConnection");
+
+        // Multi-tenancy
+        services.AddScoped<ITenantProvider, HttpTenantProvider>();
 
         // EF Core + MySQL
         services.AddDbContext<AppDbContext>(options =>
@@ -43,6 +47,7 @@ public static class DependencyInjection
 
         // Repositories
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IClienteRepository, ClienteRepository>();
         services.AddScoped<IEquipamentoRepository, EquipamentoRepository>();
         services.AddScoped<IOrdemServicoRepository, OrdemServicoRepository>();

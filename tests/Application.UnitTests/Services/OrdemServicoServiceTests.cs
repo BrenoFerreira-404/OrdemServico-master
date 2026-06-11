@@ -15,10 +15,18 @@ public class OrdemServicoServiceTests
         var osRepo = new Mock<IOrdemServicoRepository>();
         var clienteRepo = new Mock<IClienteRepository>();
         var uow = new Mock<IUnitOfWork>();
+        var tenantProvider = new Mock<ITenantProvider>();
+        tenantProvider.Setup(x => x.TenantId).Returns(Guid.NewGuid());
+
         clienteRepo.Setup(x => x.ObterPorIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cliente?)null);
 
-        var sut = new OrdemServicoService(osRepo.Object, clienteRepo.Object, uow.Object, Microsoft.Extensions.Logging.Abstractions.NullLogger<OrdemServicoService>.Instance);
+        var sut = new OrdemServicoService(
+            osRepo.Object,
+            clienteRepo.Object,
+            uow.Object,
+            tenantProvider.Object,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<OrdemServicoService>.Instance);
         var request = new CriarOrdemServicoRequest(Guid.NewGuid(), null, "Nao liga", "2h", null, null, null, null);
 
         await Assert.ThrowsAsync<DomainException>(() => sut.CriarAsync(request));
@@ -32,14 +40,22 @@ public class OrdemServicoServiceTests
         var osRepo = new Mock<IOrdemServicoRepository>();
         var clienteRepo = new Mock<IClienteRepository>();
         var uow = new Mock<IUnitOfWork>();
+        var tenantProvider = new Mock<ITenantProvider>();
+        var tenantId = Guid.NewGuid();
+        tenantProvider.Setup(x => x.TenantId).Returns(tenantId);
 
         clienteRepo.Setup(x => x.ObterPorIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Cliente.Criar("Cliente", null, null, null, null));
+            .ReturnsAsync(Cliente.Criar(tenantId, "Cliente", null, null, null, null));
         osRepo.Setup(x => x.ObterProximoSequencialNoDiaAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
         uow.Setup(x => x.CommitAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-        var sut = new OrdemServicoService(osRepo.Object, clienteRepo.Object, uow.Object, Microsoft.Extensions.Logging.Abstractions.NullLogger<OrdemServicoService>.Instance);
+        var sut = new OrdemServicoService(
+            osRepo.Object,
+            clienteRepo.Object,
+            uow.Object,
+            tenantProvider.Object,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<OrdemServicoService>.Instance);
         var request = new CriarOrdemServicoRequest(Guid.NewGuid(), null, "Nao liga", "2h", null, null, null, null);
 
         var response = await sut.CriarAsync(request);
@@ -56,10 +72,16 @@ public class OrdemServicoServiceTests
         var osRepo = new Mock<IOrdemServicoRepository>();
         var clienteRepo = new Mock<IClienteRepository>();
         var uow = new Mock<IUnitOfWork>();
+        var tenantProvider = new Mock<ITenantProvider>();
         osRepo.Setup(x => x.ObterPorIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((OrdemServico?)null);
 
-        var sut = new OrdemServicoService(osRepo.Object, clienteRepo.Object, uow.Object, Microsoft.Extensions.Logging.Abstractions.NullLogger<OrdemServicoService>.Instance);
+        var sut = new OrdemServicoService(
+            osRepo.Object,
+            clienteRepo.Object,
+            uow.Object,
+            tenantProvider.Object,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<OrdemServicoService>.Instance);
 
         await Assert.ThrowsAsync<DomainException>(() =>
             sut.AdicionarServicoAsync(Guid.NewGuid(), new AdicionarServicoRequest("Servico", 1, 10m)));

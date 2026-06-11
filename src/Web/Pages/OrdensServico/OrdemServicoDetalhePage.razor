@@ -413,14 +413,9 @@ else if (ViewModel.Detalhe is not null)
                     {
                         <RadzenTemplateForm TItem="OrdemServicoAnotacaoFormModel" Data="@ViewModel.AnotacaoForm" Submit="@OnAdicionarAnotacaoAsync">
                             <div class="row g-3">
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <RadzenFormField Text="Anotacao" Style="width:100%">
                                         <RadzenTextArea Name="AnotacaoTexto" @bind-Value="ViewModel.AnotacaoForm.Texto" Rows="3" Placeholder="Anotacao interna (nao visivel ao cliente)" />
-                                    </RadzenFormField>
-                                </div>
-                                <div class="col-md-4">
-                                    <RadzenFormField Text="Autor" Style="width:100%">
-                                        <RadzenTextBox Name="AnotacaoAutor" @bind-Value="ViewModel.AnotacaoForm.Autor" Placeholder="Nome do operador" />
                                     </RadzenFormField>
                                     <div class="mt-2">
                                         <RadzenButton Text="Adicionar Anotacao" Icon="add" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Style="width: 100%"

@@ -459,7 +459,6 @@ app.MapGet("/internal/ordens-servico-phase7-smoke", async (
     }
 
     detalheViewModel.AnotacaoForm.Texto = "Cliente autorizou reparo.";
-    detalheViewModel.AnotacaoForm.Autor = "Operador Web";
     var anotacaoResult = await detalheViewModel.AdicionarAnotacaoAsync(ct);
     if (!anotacaoResult.Succeeded)
     {

@@ -12,7 +12,8 @@ public sealed class OrdemServicoAnotacaoConfiguration : IEntityTypeConfiguration
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Texto).IsRequired().HasColumnType("text");
-        builder.Property(x => x.Autor).IsRequired().HasMaxLength(100);
+        builder.Property(x => x.AutorId).IsRequired().HasColumnName("autor_id");
+        builder.Property(x => x.AutorNome).IsRequired().HasMaxLength(100).HasColumnName("autor_nome");
 
         builder.HasOne<OrdemServico>()
             .WithMany(o => o.Anotacoes)

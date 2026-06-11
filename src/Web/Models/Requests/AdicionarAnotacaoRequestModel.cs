@@ -4,4 +4,5 @@ namespace Web.Models.Requests;
 
 public sealed record AdicionarAnotacaoRequestModel(
     [property: JsonPropertyName("texto")] string Texto,
-    [property: JsonPropertyName("autor")] string Autor);
+    [property: JsonPropertyName("usuarioId")] Guid UsuarioId,
+    [property: JsonPropertyName("usuarioNome")] string UsuarioNome);

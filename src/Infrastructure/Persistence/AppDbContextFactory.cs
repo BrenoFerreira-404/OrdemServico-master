@@ -1,7 +1,14 @@
+using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Infrastructure.Persistence;
+
+public sealed class DesignTimeTenantProvider : ITenantProvider
+{
+    public Guid? TenantId => Guid.Empty;
+    public bool EhSuperAdmin => true;
+}
 
 public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
@@ -15,6 +22,6 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
 
         builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
-        return new AppDbContext(builder.Options);
+        return new AppDbContext(builder.Options, new DesignTimeTenantProvider());
     }
 }

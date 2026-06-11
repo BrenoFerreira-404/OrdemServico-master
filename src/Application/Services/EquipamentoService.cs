@@ -11,20 +11,29 @@ public sealed class EquipamentoService : IEquipamentoService
     private readonly IEquipamentoRepository _equipamentoRepository;
     private readonly IClienteRepository _clienteRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITenantProvider _tenantProvider;
 
-    public EquipamentoService(IEquipamentoRepository equipamentoRepository, IClienteRepository clienteRepository, IUnitOfWork unitOfWork)
+    public EquipamentoService(
+        IEquipamentoRepository equipamentoRepository,
+        IClienteRepository clienteRepository,
+        IUnitOfWork unitOfWork,
+        ITenantProvider tenantProvider)
     {
         _equipamentoRepository = equipamentoRepository;
         _clienteRepository = clienteRepository;
         _unitOfWork = unitOfWork;
+        _tenantProvider = tenantProvider;
     }
 
     public async Task<EquipamentoResponse> CriarAsync(CriarEquipamentoRequest request, CancellationToken cancellationToken = default)
     {
-        var cliente = await _clienteRepository.ObterPorIdAsync(request.ClienteId, cancellationToken);
-        if (cliente is null) throw new DomainException("Cliente não encontrado.");
+        var tenantId = _tenantProvider.TenantId
+            ?? throw new DomainException("Operacao requer um tenant valido.");
 
-        var eqp = Equipamento.Criar(request.ClienteId, request.Tipo, request.Marca, request.Modelo, request.NumeroSerie);
+        var cliente = await _clienteRepository.ObterPorIdAsync(request.ClienteId, cancellationToken);
+        if (cliente is null) throw new DomainException("Cliente nao encontrado.");
+
+        var eqp = Equipamento.Criar(tenantId, request.ClienteId, request.Tipo, request.Marca, request.Modelo, request.NumeroSerie);
         
         await _equipamentoRepository.AdicionarAsync(eqp, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);

@@ -16,22 +16,33 @@ public sealed partial class OrdemServicoService : IOrdemServicoService
     private readonly IOrdemServicoRepository _osRepository;
     private readonly IClienteRepository _clienteRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITenantProvider _tenantProvider;
     private readonly ILogger<OrdemServicoService> _logger;
 
-    public OrdemServicoService(IOrdemServicoRepository osRepository, IClienteRepository clienteRepository, IUnitOfWork unitOfWork, ILogger<OrdemServicoService> logger)
+    public OrdemServicoService(
+        IOrdemServicoRepository osRepository,
+        IClienteRepository clienteRepository,
+        IUnitOfWork unitOfWork,
+        ITenantProvider tenantProvider,
+        ILogger<OrdemServicoService> logger)
     {
         _osRepository = osRepository;
         _clienteRepository = clienteRepository;
         _unitOfWork = unitOfWork;
+        _tenantProvider = tenantProvider;
         _logger = logger;
     }
 
     public async Task<OrdemServicoResponse> CriarAsync(CriarOrdemServicoRequest request, CancellationToken cancellationToken = default)
     {
+        var tenantId = _tenantProvider.TenantId
+            ?? throw new DomainException("Operacao requer um tenant valido.");
+
         var cliente = await _clienteRepository.ObterPorIdAsync(request.ClienteId, cancellationToken);
-        if (cliente is null) throw new DomainException("Cliente não encontrado.");
+        if (cliente is null) throw new DomainException("Cliente nao encontrado.");
 
         var os = OrdemServico.Criar(
+            tenantId,
             request.ClienteId,
             request.EquipamentoId,
             request.Defeito,
@@ -136,7 +147,7 @@ public sealed partial class OrdemServicoService : IOrdemServicoService
     public async Task AdicionarAnotacaoAsync(Guid id, AdicionarAnotacaoRequest request, CancellationToken cancellationToken = default)
     {
         var os = await GetOsOuThrow(id, cancellationToken);
-        os.AdicionarAnotacao(request.Texto, request.Autor);
+        os.AdicionarAnotacao(request.Texto, request.UsuarioId, request.UsuarioNome);
         await Guardar(os, cancellationToken);
     }
 

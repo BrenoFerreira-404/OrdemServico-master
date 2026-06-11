@@ -9,13 +9,14 @@ public sealed class OrdemServicoAnotacao
     public Guid OrdemServicoId { get; private set; }
 
     public string Texto { get; private set; } = string.Empty;
-    public string Autor { get; private set; } = string.Empty; // Nome ou ID de quem registrou
+    public Guid AutorId { get; private set; }
+    public string AutorNome { get; private set; } = string.Empty;
 
     public DateTime CreatedAt { get; private set; }
 
     private OrdemServicoAnotacao() { }
 
-    internal static OrdemServicoAnotacao Criar(Guid ordemServicoId, string texto, string autor)
+    internal static OrdemServicoAnotacao Criar(Guid ordemServicoId, string texto, Guid autorId, string autorNome)
     {
         if (ordemServicoId == Guid.Empty)
             throw new ArgumentException("A Ordem de Serviço deve ser informada.", nameof(ordemServicoId));
@@ -23,15 +24,19 @@ public sealed class OrdemServicoAnotacao
         if (string.IsNullOrWhiteSpace(texto))
             throw new ArgumentException("O texto da anotação não pode ser vazio.", nameof(texto));
 
-        if (string.IsNullOrWhiteSpace(autor))
-            throw new ArgumentException("O autor da anotação é obrigatório.", nameof(autor));
+        if (autorId == Guid.Empty)
+            throw new ArgumentException("O autor da anotação é obrigatório.", nameof(autorId));
+
+        if (string.IsNullOrWhiteSpace(autorNome))
+            throw new ArgumentException("O nome do autor é obrigatório.", nameof(autorNome));
 
         return new OrdemServicoAnotacao
         {
             Id = Guid.NewGuid(),
             OrdemServicoId = ordemServicoId,
             Texto = texto,
-            Autor = autor,
+            AutorId = autorId,
+            AutorNome = autorNome,
             CreatedAt = DateTime.UtcNow
         };
     }
